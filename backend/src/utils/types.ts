@@ -27,6 +27,13 @@ type AxiosReqDataType = {
   params: {};
 };
 
+type CookieType = {
+  httpOnly: boolean;
+  secure: boolean;
+  maxAge: number;
+  sameSite: 'none' | 'lax';
+};
+
 const signInBody = z.object({
   email: z.string().email(),
   password: z.string().min(6),
@@ -45,5 +52,6 @@ export {
   signInBody,
   signUpBody,
   AxiosReqDataType,
-  GenApiType
+  GenApiType,
+  CookieType
 };

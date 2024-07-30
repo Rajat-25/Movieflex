@@ -1,9 +1,16 @@
 import { Request, Response, Router } from 'express';
 import User from '../schemas/user';
 import { code, getToken } from '../utils';
-import { signInBody, signUpBody } from '../utils/types';
+import { CookieType, signInBody, signUpBody } from '../utils/types';
 
 const router = Router();
+
+const cookieOptions: CookieType = {
+  httpOnly: true,
+  secure: process.env.FRONTEND_SECURE == 'true' ? true : false,
+  maxAge: 3600000,
+  sameSite: process.env.FRONTEND_SECURE == 'true' ? 'none' : 'lax',
+};
 
 router.post('/signup', async (req: Request, res: Response) => {
   const userData = req.body;
@@ -27,7 +34,7 @@ router.post('/signup', async (req: Request, res: Response) => {
       const authToken = getToken(dbData._id);
 
       if (dbData) {
-        res.cookie('authToken', `Bearer ${authToken}`, { maxAge: 3600000 });
+        res.cookie('authToken', `Bearer ${authToken}`, cookieOptions);
         return res.status(code.success).json({
           msg: 'User Signed Up Successfully',
           user: { firstName, lastName, email, _id },
@@ -53,7 +60,7 @@ router.post('/signin', async (req: Request, res: Response) => {
       const { firstName, lastName, email, _id } = dbData;
       const authToken = getToken(dbData._id);
 
-      res.cookie('authToken', `Bearer ${authToken}`, { maxAge: 3600000 });
+      res.cookie('authToken', `Bearer ${authToken}`, cookieOptions);
 
       return res.status(code.success).json({
         msg: 'User Signed in Successfully',

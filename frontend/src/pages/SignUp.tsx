@@ -1,14 +1,17 @@
+import { useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthForm from '../components/AuthForm';
-import { useSignUpMutation } from '../store';
+import { logIn, useSignUpMutation } from '../store';
 import { signUpFields, signUpInputs, urlPath } from '../utils';
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [signUpReq] = useSignUpMutation();
 
   const sendSignUpReq = async (arg: SignUpReqType) => {
-    await signUpReq(arg);
+    const { user } = await signUpReq(arg).unwrap();
+    dispatch(logIn(user));
     navigate(urlPath.explore);
   };
 
